@@ -1,38 +1,52 @@
 let selectedCell = null; // Variable pour garder la cellule sélectionnée
+let currentGrid = []; // Stocke la grille actuelle
+let solvedGrid = []; // Stocke la grille résolue
 
-// Exemple de grille initiale
-let initialGrid = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9]
-];
+const nombreAleatoire = (nombreMax) => Math.trunc(Math.random() * nombreMax);
+
+async function fetchSudoku(difficulty = 'hard') {
+    try {
+        const response = await fetch('grid.json');
+        if (!response.ok) {
+            throw new Error('Fichier pas trouvé!');
+        }
+        const grilles = await response.json();
+        if (grilles.length === 0) {
+            throw new Error('Aucune grille trouvée!');
+        }
+        const numeroGrille = nombreAleatoire(grilles.length);
+        const sudoku = grilles[numeroGrille];
+        const grille = sudoku.grille;
+        solvedGrid = sudoku.solvedgrille;
+
+        currentGrid = grille;
+        generateGrid(grille);
+
+    } catch (error) {
+        console.error('Erreur lors de la récupération de la grille de Sudoku :', error);
+    }
+}
 
 // Générer la grille de Sudoku
 function generateGrid(grid) {
     const sudokuGrid = document.getElementById("sudoku-grid");
     sudokuGrid.innerHTML = ""; // Vider la grille
+    console.log('Génération de la grille');  // Debugging
 
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
             let cell = document.createElement("div");
 
-            // Ajouter les séparateurs pour les blocs 3x3
             if (i % 3 === 0 && i !== 0) {
-                cell.classList.add('separator-top'); // Bordure en haut pour les lignes 3, 6
+                cell.classList.add('separator-top');
             }
             if (j % 3 === 0 && j !== 0) {
-                cell.classList.add('separator-left'); // Bordure à gauche pour les colonnes 3, 6
+                cell.classList.add('separator-left');
             }
 
-            if (grid[i][j] !== 0) {
+            if (grid[i][j] !== null) {
                 cell.textContent = grid[i][j];
-                cell.classList.add("fixed"); // Cellules non éditables
+                cell.classList.add("fixed");
             } else {
                 cell.addEventListener('click', () => selectCell(cell, i, j));
             }
@@ -48,6 +62,12 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
+// Ajouter des événements aux boutons
+const numberButtons = document.querySelectorAll('.number-btn');
+numberButtons.forEach(button => {
+    button.addEventListener('click', () => handleNumberSelection(button.textContent));
+});
+
 // Gérer la sélection de numéro
 function handleNumberSelection(number) {
     if (selectedCell) {
@@ -55,13 +75,11 @@ function handleNumberSelection(number) {
         const col = selectedCell.dataset.col;
         const value = parseInt(number);
 
-        if (isValidMove(initialGrid, row, col, value)) {
+        if (isValidMove(row, col, value)) {
             selectedCell.style.color = "blue"; // En bleu si valide
-            initialGrid[row][col] = value;
+            currentGrid[row][col] = value;
 
-            // Ajouter la classe "correct" si le mouvement est valide
             selectedCell.classList.add("correct");
-
         } else {
             selectedCell.style.color = "red"; // En rouge si invalide
         }
@@ -72,9 +90,8 @@ function handleNumberSelection(number) {
     }
 }
 
-// Gérer la sélection de cellule (ajuster pour vérifier si elle est correcte)
+// Gérer la sélection de cellule
 function selectCell(cell, row, col) {
-    // Si la cellule a la classe "correct", ne pas permettre la sélection
     if (cell.classList.contains('correct')) return;
 
     if (selectedCell) {
@@ -84,21 +101,24 @@ function selectCell(cell, row, col) {
     selectedCell.classList.add("selected");
     selectedCell.dataset.row = row;
     selectedCell.dataset.col = col;
+
+    console.log('Selected cell:', selectedCell);
+    console.log('Row:', row, 'Col:', col);
 }
 
 // Valider si le mouvement est correct
-function isValidMove(grid, row, col, num) {
+function isValidMove(row, col, num) {
     row = parseInt(row);
     col = parseInt(col);
 
     // Vérifier la ligne
     for (let x = 0; x < 9; x++) {
-        if (grid[row][x] === num) return false;
+        if (currentGrid[row][x] === num) return false;
     }
 
     // Vérifier la colonne
     for (let x = 0; x < 9; x++) {
-        if (grid[x][col] === num) return false;
+        if (currentGrid[x][col] === num) return false;
     }
 
     // Vérifier le bloc 3x3
@@ -106,34 +126,27 @@ function isValidMove(grid, row, col, num) {
     const startCol = col - col % 3;
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            if (grid[i + startRow][j + startCol] === num) return false;
+            if (currentGrid[i + startRow][j + startCol] === num) return false;
         }
     }
 
     return true;
 }
 
-// Ajouter des événements aux boutons
-const numberButtons = document.querySelectorAll('.number-btn');
-numberButtons.forEach(button => {
-    button.addEventListener('click', () => handleNumberSelection(button.textContent));
-});
-
-generateGrid(initialGrid);
-
+// Résoudre le Sudoku
 function solveSudoku(grid) {
     const emptySpot = findEmptySpot(grid);
-    if (!emptySpot) return true; // Sudoku solved
+    if (!emptySpot) return true;
 
     const [row, col] = emptySpot;
 
     for (let num = 1; num <= 9; num++) {
-        if (isValidMove(grid, row, col, num)) {
+        if (isValidMove(row, col, num)) {
             grid[row][col] = num;
 
             if (solveSudoku(grid)) return true;
 
-            grid[row][col] = 0; // Reset and backtrack
+            grid[row][col] = 0; // Reset
         }
     }
 
@@ -150,54 +163,30 @@ function findEmptySpot(grid) {
 }
 
 function revealSolution() {
-    if (solveSudoku(initialGrid)) {
-        generateGrid(initialGrid); // Régénérer la grille avec la solution
+    if (solveSudoku(currentGrid)) {
+        generateGrid(solvedGrid); // Régénérer la grille avec la solution
     } else {
         alert("Pas de solution trouvée !");
     }
 }
 
-// Ajouter un événement au bouton "Reveal Solution"
+// Ajouter un événement au bouton "Révéler la solution"
 document.getElementById('reveal-btn').addEventListener('click', revealSolution);
 
-// Ajouter un événement au bouton "New Game"
-function newGame() {
-    // Remettre la grille initiale
-    const defaultGrid = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
-    ];
+// Ajouter un événement au bouton "Nouvelle Partie"
+document.getElementById('restart-btn').addEventListener('click', fetchSudoku);
 
-    // Générer à nouveau la grille
-    generateGrid(defaultGrid);
-
-    // Réinitialiser la variable `initialGrid`
-    initialGrid = defaultGrid.map(row => [...row]); // Clone la grille
-}
-
-document.getElementById('restart-btn').addEventListener('click', newGame);
-
-// Fonction pour effacer le contenu d'une cellule
+// Effacer le contenu d'une cellule
 function eraseCell() {
     if (selectedCell && !selectedCell.classList.contains("fixed") && !selectedCell.classList.contains("correct")) {
         const row = selectedCell.dataset.row;
         const col = selectedCell.dataset.col;
 
-        // Remettre la valeur de la grille à 0
-        initialGrid[row][col] = 0;
+        currentGrid[row][col] = 0;
 
-        // Effacer le contenu de la cellule et sa couleur
         selectedCell.textContent = "";
         selectedCell.style.color = "";
 
-        // Déselectionner la cellule
         selectedCell.classList.remove("selected");
         selectedCell = null;
     }
@@ -207,7 +196,9 @@ function eraseCell() {
 document.getElementById('erase-btn').addEventListener('click', eraseCell);
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Delete' || event.key === 'Backspace') {
-        eraseCell();  // Appelle la fonction d'effacement si la touche Delete est pressée
+        eraseCell();
     }
 });
 
+// Charger une grille dès le chargement de la page
+fetchSudoku();
