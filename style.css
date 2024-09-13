@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    user-select: none;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+h1 {
+    margin-block: 2rem;
+    font-size: 3em;
+    font-weight: 800;
+    color: #333;
+}
+
+p {
+    font-size: 1.1rem;
+    margin-top: 4px;
+    color: #777;
+    font-weight: 500;
+}
+
+.row.center {
+    margin-block: auto;
+}
+
+#sudoku-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    width: auto;
+    height: auto;
+    border: 2px solid black;
+    margin-right: 50px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#sudoku-grid div {
+    border: solid 1px #a8a8a8;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 50px;
+    background-color: #fff;
+    width: 50px;
+    height: 50px;
+}
+
+#sudoku-grid div.selected {
+    background-color: #eaeef4;
+}
+
+#sudoku-grid div.fixed {
+    color: #000;
+}
+
+#sudoku-grid div.separator-top {
+    border-top: 2px solid black;
+}
+
+#sudoku-grid div.separator-left {
+    border-left: 2px solid black;
+}
+
+#number-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.number-btn {
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    cursor: pointer;
+    background-color: #EEE;
+    border-radius: 20px;
+    border: solid 2px #DDD;
+    animation: fadeInCard .7s .2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInCard {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#reveal-btn,
+#restart-btn,
+#erase-btn {
+    padding: 15px 20px;
+    font-size: 1.3em;
+    cursor: pointer;
+    background-color: #333;
+    color: #FFF;
+    border: none;
+    font-weight: 700;
+    border-radius: 20px;
+    animation: fadeInCard 1s .5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    opacity: 0;
+}
+
+.column #erase-btn {
+    width: 70px;
+    height: 70px;
+    padding: 0;
+    font-size: 1.8rem;
+}
+
+.row.bottom {
+    margin-block: auto;
+    gap: 24px;
+}

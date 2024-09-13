@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Sudoku</title>
+    <link href="style.css" rel="stylesheet">
+    <script crossorigin="anonymous" src="https://kit.fontawesome.com/7a0b90407e.js"></script>
+</head>
+<body>
+    <h1>Sudoku</h1>
+
+    <div class="row center">
+        <div id="sudoku-grid"></div>
+
+        <div class="column pad">
+            <div id="number-pad">
+                <button class="number-btn">1</button>
+                <button class="number-btn">2</button>
+                <button class="number-btn">3</button>
+                <button class="number-btn">4</button>
+                <button class="number-btn">5</button>
+                <button class="number-btn">6</button>
+                <button class="number-btn">7</button>
+                <button class="number-btn">8</button>
+                <button class="number-btn">9</button>
+            </div>
+
+            <div class="column">
+                <button id="erase-btn"><i class="fa-solid fa-eraser"></i></button>
+                <p>Erase</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row bottom">
+        <button id="restart-btn">New game</button>
+        <button id="reveal-btn">Reveal solution</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
