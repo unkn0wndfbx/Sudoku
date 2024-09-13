@@ -105,6 +105,7 @@ p {
     align-items: center;
     font-size: 2em;
     background-color: #EEE;
+    color: #333;
     border-radius: 20px;
     border: solid 2px #DDD;
     animation: fadeInCard .7s .2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
@@ -152,4 +153,33 @@ p {
 .row.bottom {
     margin-block: auto;
     gap: 24px;
+}
+
+.difficulty {
+    position: fixed;
+    right: 40px;
+    top: 40px;
+}
+
+.difficulty button {
+    margin-inline: 4px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #EEE;
+    color: #333;
+    font-weight: 700;
+    border-radius: 8px;
+    border: solid 2px #DDD;
+    animation: fadeInCard 1s .5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    opacity: 0;
+}
+
+.difficulty button.selectedDifficulty {
+    background-color: #DDD;
+}
+
+.difficulty p {
+    margin-top: 0;
+    margin-right: 4px;
 }

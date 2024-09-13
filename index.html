@@ -10,6 +10,13 @@
 <body>
     <h1>Sudoku</h1>
 
+    <div class="row difficulty">
+        <p>Difficulty: </p>
+        <button id="easy-btn">Easy</button>
+        <button id="medium-btn">Medium</button>
+        <button id="hard-btn">Hard</button>
+    </div>
+
     <div class="row center">
         <div id="sudoku-grid"></div>
 
@@ -34,8 +41,10 @@
     </div>
 
     <div class="row bottom">
+        <p>Time: <span id="time">0:00</span></p>
         <button id="restart-btn">New game</button>
         <button id="reveal-btn">Reveal solution</button>
+        <p>Mistakes: <span id="mistakes">0</span></p>
     </div>
 
     <script src="script.js"></script>

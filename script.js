@@ -2,9 +2,64 @@ let selectedCell = null; // Variable pour garder la cellule sélectionnée
 let currentGrid = []; // Stocke la grille actuelle
 let solvedGrid = []; // Stocke la grille résolue
 
+let startTime;  // Horodatage du début
+let timerInterval;  // Référence à l'intervalle du timer
+
+let mistakes = 0; // Compteur de fautes
+
+// Fonction pour formater le temps en minutes et secondes
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+// Fonction pour démarrer le timer
+function startTimer() {
+    startTime = Date.now();  // Enregistrer le moment du démarrage
+    timerInterval = setInterval(updateTimer, 1000);  // Met à jour le timer toutes les secondes
+}
+
+// Fonction pour mettre à jour l'affichage du timer
+function updateTimer() {
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+    document.getElementById('time').textContent = formatTime(elapsedTime);
+}
+
+// Fonction pour arrêter le timer
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+// Fonction pour réinitialiser le timer
+function resetTimer() {
+    stopTimer();
+    document.getElementById('time').textContent = '0:00';
+}
+
 const nombreAleatoire = (nombreMax) => Math.trunc(Math.random() * nombreMax);
 
-async function fetchSudoku(difficulty = 'hard') {
+async function fetchSudoku(difficulty = 'easy') {
+
+    if (difficulty === 'easy') {
+        document.getElementById("easy-btn").classList.add("selectedDifficulty");
+    } else {
+        document.getElementById("easy-btn").classList.remove("selectedDifficulty");
+        if (difficulty === 'medium') {
+            document.getElementById("medium-btn").classList.add("selectedDifficulty");
+        } else {
+            document.getElementById("easy-btn").classList.remove("selectedDifficulty");
+            document.getElementById("medium-btn").classList.remove("selectedDifficulty");
+            if (difficulty === 'hard') {
+                document.getElementById("hard-btn").classList.add("selectedDifficulty");
+            } else {
+                document.getElementById("easy-btn").classList.remove("selectedDifficulty");
+                document.getElementById("medium-btn").classList.remove("selectedDifficulty");
+                document.getElementById("hard-btn").classList.remove("selectedDifficulty");
+            }
+        }
+    }
+
     try {
         const response = await fetch('grid.json');
         if (!response.ok) {
@@ -21,6 +76,7 @@ async function fetchSudoku(difficulty = 'hard') {
 
         currentGrid = grille;
         generateGrid(grille);
+        startTimer();
 
     } catch (error) {
         console.error('Erreur lors de la récupération de la grille de Sudoku :', error);
@@ -68,6 +124,11 @@ numberButtons.forEach(button => {
     button.addEventListener('click', () => handleNumberSelection(button.textContent));
 });
 
+// Met à jour l'affichage du compteur de fautes
+function updateMistakes() {
+    document.getElementById('mistakes').textContent = mistakes;
+}
+
 // Gérer la sélection de numéro
 function handleNumberSelection(number) {
     if (selectedCell) {
@@ -82,6 +143,8 @@ function handleNumberSelection(number) {
             selectedCell.classList.add("correct");
         } else {
             selectedCell.style.color = "red"; // En rouge si invalide
+            mistakes++; // Incrémenter le compteur de fautes
+            updateMistakes(); // Mettre à jour l'affichage des fautes
         }
 
         selectedCell.textContent = value; // Mettre à jour l'affichage
@@ -130,7 +193,9 @@ function isValidMove(row, col, num) {
         }
     }
 
-    return true;
+    // Vérifier contre la grille résolue
+    // Le nombre proposé doit être le même que dans la grille résolue à cette position
+    return solvedGrid[row][col] === num;
 }
 
 // Résoudre le Sudoku
@@ -165,6 +230,7 @@ function findEmptySpot(grid) {
 function revealSolution() {
     if (solveSudoku(currentGrid)) {
         generateGrid(solvedGrid); // Régénérer la grille avec la solution
+        stopTimer();
     } else {
         alert("Pas de solution trouvée !");
     }
@@ -174,7 +240,10 @@ function revealSolution() {
 document.getElementById('reveal-btn').addEventListener('click', revealSolution);
 
 // Ajouter un événement au bouton "Nouvelle Partie"
-document.getElementById('restart-btn').addEventListener('click', fetchSudoku);
+document.getElementById('restart-btn').addEventListener('click', () => {
+    fetchSudoku();
+    resetTimer();
+});
 
 // Effacer le contenu d'une cellule
 function eraseCell() {
