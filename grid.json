@@ -1,6 +1,6 @@
 [
   {
-    "difficulte": "facile",
+    "difficulte": "easy",
     "grille": [
       [null, 3, 5, 9, null, null, 4, 2, null],
       [1, 7, null, null, null, 4, 6, 8, null],
@@ -25,7 +25,7 @@
     ]
   },
   {
-    "difficulte": "moyen",
+    "difficulte": "medium",
     "grille": [
       [8, 9, null, 7, null, 4, null, null, 2],
       [2, null, null, null, 8, null, null, null, 9],
@@ -50,7 +50,7 @@
     ]
   },
   {
-    "difficulte": "difficile",
+    "difficulte": "hard",
     "grille": [
       [5, 3, null, 2, 7, null, 6, null, 4],
       [null, null, 4, 1, 9, 5, 8, null, null],
@@ -75,7 +75,7 @@
     ]
   },
   {
-    "difficulte": "facile",
+    "difficulte": "easy",
     "grille": [
       [null, null, 5, 9, null, null, 4, 2, null],
       [null, 7, 1, null, null, 4, 6, 8, null],
@@ -100,7 +100,7 @@
     ]
   },
   {
-    "difficulte": "moyen",
+    "difficulte": "medium",
     "grille": [
       [8, 9, null, 7, null, 4, null, null, null],
       [2, 3, null, null, null, null, null, null, 9],
@@ -125,7 +125,7 @@
     ]
   },
   {
-    "difficulte": "difficile",
+    "difficulte": "hard",
     "grille": [
       [5, 3, null, null, 7, null, null, null, null],
       [6, null, null, 1, 9, 5, null, null, null],

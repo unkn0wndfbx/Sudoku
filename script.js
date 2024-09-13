@@ -41,23 +41,17 @@ const nombreAleatoire = (nombreMax) => Math.trunc(Math.random() * nombreMax);
 
 async function fetchSudoku(difficulty = 'easy') {
 
+    document.getElementById("easy-btn").classList.remove("selectedDifficulty");
+    document.getElementById("medium-btn").classList.remove("selectedDifficulty");
+    document.getElementById("hard-btn").classList.remove("selectedDifficulty");
+
+    // Ajouter la classe pour la difficulté sélectionnée
     if (difficulty === 'easy') {
         document.getElementById("easy-btn").classList.add("selectedDifficulty");
-    } else {
-        document.getElementById("easy-btn").classList.remove("selectedDifficulty");
-        if (difficulty === 'medium') {
-            document.getElementById("medium-btn").classList.add("selectedDifficulty");
-        } else {
-            document.getElementById("easy-btn").classList.remove("selectedDifficulty");
-            document.getElementById("medium-btn").classList.remove("selectedDifficulty");
-            if (difficulty === 'hard') {
-                document.getElementById("hard-btn").classList.add("selectedDifficulty");
-            } else {
-                document.getElementById("easy-btn").classList.remove("selectedDifficulty");
-                document.getElementById("medium-btn").classList.remove("selectedDifficulty");
-                document.getElementById("hard-btn").classList.remove("selectedDifficulty");
-            }
-        }
+    } else if (difficulty === 'medium') {
+        document.getElementById("medium-btn").classList.add("selectedDifficulty");
+    } else if (difficulty === 'hard') {
+        document.getElementById("hard-btn").classList.add("selectedDifficulty");
     }
 
     try {
@@ -69,8 +63,16 @@ async function fetchSudoku(difficulty = 'easy') {
         if (grilles.length === 0) {
             throw new Error('Aucune grille trouvée!');
         }
-        const numeroGrille = nombreAleatoire(grilles.length);
-        const sudoku = grilles[numeroGrille];
+
+        // Filtrer les grilles selon la difficulté
+        const filteredGrids = grilles.filter(grille => grille.difficulte === difficulty);
+
+        if (filteredGrids.length === 0) {
+            throw new Error('Aucune grille trouvée pour la difficulté spécifiée!');
+        }
+
+        const numeroGrille = nombreAleatoire(filteredGrids.length);
+        const sudoku = filteredGrids[numeroGrille];
         const grille = sudoku.grille;
         solvedGrid = sudoku.solvedgrille;
 
@@ -268,6 +270,11 @@ document.addEventListener('keydown', (event) => {
         eraseCell();
     }
 });
+
+// Ajouter des événements aux boutons de difficulté
+document.getElementById('easy-btn').addEventListener('click', () => fetchSudoku('easy'));
+document.getElementById('medium-btn').addEventListener('click', () => fetchSudoku('medium'));
+document.getElementById('hard-btn').addEventListener('click', () => fetchSudoku('hard'));
 
 // Charger une grille dès le chargement de la page
 fetchSudoku();
